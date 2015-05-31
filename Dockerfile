@@ -1,31 +1,65 @@
 FROM phusion/baseimage
-MAINTAINER Jochen Roessner <jochen@zerties.org>
+MAINTAINER Christian Dietrich <stettberger@dokucode.de>
+
+ENV IKIWIKI_USER ikiwiki
+ENV IKIWIKI_UID 21601
+ENV IKIWIKI_HOME /home/ikiwiki
+ENV IKIWIKI_NAME "Dokucode"
+ENV IKIWIKI_ADMIN_EMAIL "stettberger@dokucode.de"
+ENV IKIWIKI_ADMIN_USER "stettberger"
+ENV IKIWIKI_URL "http://blog.dokucode.de"
+ENV IKIWIKI_ACCOUNT_CREATION_PASSWORD "foobar23"
+
 
 # Install base packages
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -yq install \
         curl \
         apache2 \
-        libapache2-mod-php5 \
-        php5-mysql \
-        php5-gd \
-        php5-curl \
-        php-pear \
-        php-apc && \
-    apt-get clean && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
-    sed -i "s/variables_order.*/variables_order = \"EGPCS\"/g" /etc/php5/apache2/php.ini
- 
-RUN apt-get -yq install exim4-daemon-light && apt-get clean
+        python  \
+        python-jinja2  \
+        libtext-multimarkdown-perl \
+        libtext-bibtex-perl \
+        libsearch-xapian-perl \
+        imagemagick \
+        libhighlight-perl \
+        highlight \
+        ikiwiki && \
+    apt-get clean
+
+# Add ejabberd user and group
+RUN useradd -r -m \
+       -g www-data \
+       --uid $IKIWIKI_UID \
+       -d $IKIWIKI_HOME \
+       -s /usr/sbin/nologin \
+       $IKIWIKI_USER
+
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install exim4-daemon-light && apt-get clean
 
 ENV ALLOW_OVERRIDE **False**
 
-# Configure /app folder with sample app
-RUN mkdir -p /app && rm -fr /var/www/html && ln -s /app /var/www/html
+RUN mkdir /var/lock/apache2 && mkdir /var/run/apache2
 
+# Configure /app folder with sample app
+RUN mkdir -p /app && rm -fr /var/www/html && ln -s /app /var/www/html \
+    && chown $IKIWIKI_USER:www-data /app -R
+
+
+# Run an apache and an exim
 ADD eximsmarthost.sh /etc/service/exim/run
 ADD apache.sh /etc/service/apache2/run
 
+ADD ./conf ${IKIWIKI_HOME}/conf
+ADD ./scripts ${IKIWIKI_HOME}/scripts
+ADD ./dot-ikiwiki ${IKIWIKI_HOME}/.ikiwiki
+
+# Setup Script
+ADD ./setup.sh /etc/my_init.d/ikiwiki
+
 EXPOSE 80
-WORKDIR /app
+
+VOLUME ["/home/ikiwiki/www.git"]
+WORKDIR /home/ikiwiki
