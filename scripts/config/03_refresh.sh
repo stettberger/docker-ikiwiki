@@ -1,3 +1,4 @@
 #!/bin/bash
 
-/sbin/setuser ${IKIWIKI_USER} ikiwiki --setup ${IKIWIKI_HOME}/setup.cfg
+chown www-data /app -R
+/sbin/setuser www-data ikiwiki --setup ${IKIWIKI_HOME}/setup.cfg

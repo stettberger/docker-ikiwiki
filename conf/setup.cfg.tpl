@@ -24,13 +24,13 @@ use IkiWiki::Setup::Standard {
 	# url to the ikiwiki.cgi
 	cgiurl => '{{ env["IKIWIKI_URL"] }}/ikiwiki.cgi',
 	# filename of cgi wrapper to generate
-	cgi_wrapper => '/app/ikiwiki.cgi',
+	cgi_wrapper => '/app/cgi-bin/ikiwiki.cgi',
 	# mode for cgi_wrapper (can safely be made suid)
 	cgi_wrappermode => '0755',
 	# rcs backend to use
 	rcs => 'git',
 	# plugins to add to the default configuration
-	add_plugins => [qw{shortcut goodstuff websetup search attachment format highlight graphviz comments opendiscussion blogspam calendar sidebar moderatedcomments bibtex}],
+	add_plugins => [qw{shortcut goodstuff websetup search attachment format highlight graphviz blogspam calendar opendiscussion sidebar comments moderatedcomments bibtex}],
 	# plugins to disable
 	disable_plugins => [qw{openid flickr google}],
 	# additional directory to search for template files
@@ -93,7 +93,7 @@ use IkiWiki::Setup::Standard {
 
 	# git plugin
 	# git hook to generate
-	git_wrapper => '{{ env["IKIWIKI_HOME"] }}/www.git/hooks/post-update',
+	# git_wrapper => '{{ env["IKIWIKI_HOME"] }}/www.git/hooks/post-update',
 	# shell command for git_wrapper to run, in the background
 	#git_wrapper_background_command => 'git push github',
 	# mode for git_wrapper (can safely be made suid)
