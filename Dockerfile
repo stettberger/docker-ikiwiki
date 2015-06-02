@@ -1,14 +1,14 @@
 FROM phusion/baseimage
 MAINTAINER Christian Dietrich <stettberger@dokucode.de>
 
-ENV IKIWIKI_UID 21601
-ENV IKIWIKI_GID 1000
+ENV IKIWIKI_UID 1002
+ENV IKIWIKI_GID 1002
 ENV IKIWIKI_HOME /home/ikiwiki
-ENV IKIWIKI_NAME "Dokucode"
-ENV IKIWIKI_ADMIN_EMAIL "stettberger@dokucode.de"
-ENV IKIWIKI_ADMIN_USER "stettberger"
-ENV IKIWIKI_URL "http://blog.dokucode.de"
-ENV IKIWIKI_ACCOUNT_CREATION_PASSWORD "foobar23"
+ENV IKIWIKI_NAME Dokucode
+ENV IKIWIKI_ADMIN_EMAIL stettberger@dokucode.de
+ENV IKIWIKI_ADMIN_USER stettberger
+ENV IKIWIKI_URL http://blog.dokucode.de
+ENV IKIWIKI_ACCOUNT_CREATION_PASSWORD foobar23
 
 # Add ejabberd user and group
 RUN deluser www-data && addgroup www-data --gid $IKIWIKI_GID && useradd -r -m \
@@ -75,5 +75,5 @@ RUN a2enmod cgi && \
 
 EXPOSE 80
 
-VOLUME ["/home/ikiwiki/www.git", "/home/ikiwiki/www.db"]
+VOLUME ["/home/ikiwiki/www.git", "/home/ikiwiki/www.db", "/app/files"]
 WORKDIR /home/ikiwiki
